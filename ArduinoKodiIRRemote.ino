@@ -4,8 +4,10 @@
  * Send the standard arrow keys/enter/backspace and play/FFWD/rewind based
  * on receipt of commands from my remote.
  * 
- * Uses http://arcfn.com's IRremote library and 
- * http://mitchtech.net/arduino-usb-hid-keyboard/'s walk-through on setting up
+ * Uses the IRRemote library from
+ * http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html
+ * (GitHub: https://github.com/z3t0/Arduino-IRremote)
+ * and http://mitchtech.net/arduino-usb-hid-keyboard/'s walk-through on setting up
  * an Arduino to work as a keyboard.
  * 
  * Specifically works with the oCOSMO CE4031's remote, as is.
@@ -13,7 +15,6 @@
  *
  * Copyright 2015 Corban Mailloux
  * corb.co
- * 
  */
 
 #include <IRremote.h>
