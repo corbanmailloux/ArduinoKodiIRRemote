@@ -2,18 +2,18 @@
  * IR Remote Control for XBMC/Kodi
  * 
  * Send the standard arrow keys/enter/backspace and play/FFWD/rewind based
- * on receipt of commands from my remote.
+ * on receipt of commands from a TV remote.
  * 
  * Uses the IRRemote library from
  * http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html
  * (GitHub: https://github.com/z3t0/Arduino-IRremote)
- * and http://mitchtech.net/arduino-usb-hid-keyboard/'s walk-through on setting up
+ * and the guide at http://mitchtech.net/arduino-usb-hid-keyboard/ to set up
  * an Arduino to work as a keyboard.
  * 
  * Specifically works with the oCOSMO CE4031's remote, as is.
  *
  *
- * Copyright 2015 Corban Mailloux
+ * Made in 2015 by Corban Mailloux
  * corb.co
  */
 
@@ -74,29 +74,37 @@ void loop() {
       case 0xFB0: // Star (Context Menu)
         buf[2] = 0x06; // C
         break;
-      case 0xB70: // SoundBar - Power (Stop)
-        buf[2] = 0x1B; // X
-        break;
+
+      // Air Conditioner Controls
+      case 0xB70: // SoundBar - Power
+        sendAirConditionerIR(); // AC power
+        return;
       case 0xCF0: // SoundBar - Volume Down
-        buf[2] = 0x2D; // -
-        break;
+        sendAirConditionerIR(); // Temperature down
+        return;
       case 0x4F0: // SoundBar - Volume Up
-        buf[2] = 0x2E; // +
-        break;
-      case 0x0F0: // SoundBar - Source (Home Screen)
-        buf[2] = 0x29; // Esc
-        break;
-      case 0x8F0: // SoundBar - Mode (Toggle Watched)
-        buf[2] = 0x1A; // W
-        break;
-      // The next four buttons are user-defined, but I don't have anything
-      // good for them to do yet, so they send the spacebar.
+        sendAirConditionerIR(); // Temperature up
+        return;
+      case 0x0F0: // SoundBar - Source
+        sendAirConditionerIR(); // AC mode
+        return;
+      case 0x8F0: // SoundBar - Mode
+        sendAirConditionerIR(); // Fan mode
+        return;
       case 0x5F0: // A - Red
+        sendAirConditionerIR(); // Fan down
+        return;
       case 0xDF0: // B - Green
+        sendAirConditionerIR(); // Fan up
+        return;
       case 0x3F0: // C - Yellow
-      case 0xBF0: // D - Orange
-        buf[2] = 0x2C; // Spacebar
+        // Nothing yet...
         break;
+      case 0xBF0: // D - Orange
+        sendAirConditionerIR(); // Fan auto
+        return;
+
+      // Non-matching IR
       default:
         irrecv.resume(); // Receive the next value
         return;
@@ -116,4 +124,10 @@ void releaseKey()
   buf[0] = 0;
   buf[2] = 0;
   Serial.write(buf, 8); // Release key  
+}
+
+void sendAirConditionerIR()
+{
+  // Do sending stuff
+  irrecv.resume(); // Receive the next value
 }
