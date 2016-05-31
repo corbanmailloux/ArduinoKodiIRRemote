@@ -23,8 +23,10 @@ uint8_t buf[8] = {
   0 };  /* Keyboard report buffer */
 
 int RECV_PIN = 11;
+// Send pin = 3
 
 IRrecv irrecv(RECV_PIN);
+IRsend irsend; // Send pin 3
 
 decode_results results;
 
@@ -77,31 +79,31 @@ void loop() {
 
       // Air Conditioner Controls
       case 0xB70: // SoundBar - Power
-        sendAirConditionerIR(); // AC power
+        sendAirConditionerIR(0x8877); // AC power
         return;
       case 0xCF0: // SoundBar - Volume Down
-        sendAirConditionerIR(); // Temperature down
+        sendAirConditionerIR(0xB04F); // Temperature down
         return;
       case 0x4F0: // SoundBar - Volume Up
-        sendAirConditionerIR(); // Temperature up
+        sendAirConditionerIR(0x708F); // Temperature up
         return;
       case 0x0F0: // SoundBar - Source
-        sendAirConditionerIR(); // AC mode
+        sendAirConditionerIR(0x906F); // AC mode
         return;
       case 0x8F0: // SoundBar - Mode
-        sendAirConditionerIR(); // Fan mode
+        sendAirConditionerIR(0xE01F); // Fan mode
         return;
       case 0x5F0: // A - Red
-        sendAirConditionerIR(); // Fan down
+        sendAirConditionerIR(0x20DF); // Fan down
         return;
       case 0xDF0: // B - Green
-        sendAirConditionerIR(); // Fan up
+        sendAirConditionerIR(0x807F); // Fan up
         return;
       case 0x3F0: // C - Yellow
         // Nothing yet...
         break;
       case 0xBF0: // D - Orange
-        sendAirConditionerIR(); // Fan auto
+        sendAirConditionerIR(0xF00F); // Fan auto
         return;
 
       // Non-matching IR
@@ -126,8 +128,8 @@ void releaseKey()
   Serial.write(buf, 8); // Release key  
 }
 
-void sendAirConditionerIR()
+void sendAirConditionerIR(unsigned long value)
 {
-  // Do sending stuff
+  irsend.sendNEC(value, 16);
   irrecv.resume(); // Receive the next value
 }
