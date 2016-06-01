@@ -79,32 +79,32 @@ void loop() {
 
       // Air Conditioner Controls
       case 0xB70: // SoundBar - Power
-        sendAirConditionerIR(0x8877); // AC power
-        return;
+        sendAirConditionerIR(0x10AF8877); // AC power
+        break;
       case 0xCF0: // SoundBar - Volume Down
-        sendAirConditionerIR(0xB04F); // Temperature down
-        return;
+        sendAirConditionerIR(0x10AFB04F); // Temperature down
+        break;
       case 0x4F0: // SoundBar - Volume Up
-        sendAirConditionerIR(0x708F); // Temperature up
-        return;
+        sendAirConditionerIR(0x10AF708F); // Temperature up
+        break;
       case 0x0F0: // SoundBar - Source
-        sendAirConditionerIR(0x906F); // AC mode
-        return;
+        sendAirConditionerIR(0x10AF906F); // AC mode
+        break;
       case 0x8F0: // SoundBar - Mode
-        sendAirConditionerIR(0xE01F); // Fan mode
-        return;
+        sendAirConditionerIR(0x10AFE01F); // Fan mode
+        break;
       case 0x5F0: // A - Red
-        sendAirConditionerIR(0x20DF); // Fan down
-        return;
+        sendAirConditionerIR(0x10AF20DF); // Fan down
+        break;
       case 0xDF0: // B - Green
-        sendAirConditionerIR(0x807F); // Fan up
-        return;
+        sendAirConditionerIR(0x10AF807F); // Fan up
+        break;
       case 0x3F0: // C - Yellow
         // Nothing yet...
         break;
       case 0xBF0: // D - Orange
-        sendAirConditionerIR(0xF00F); // Fan auto
-        return;
+        sendAirConditionerIR(0x10AFF00F); // Fan auto
+        break;
 
       // Non-matching IR
       default:
@@ -130,6 +130,7 @@ void releaseKey()
 
 void sendAirConditionerIR(unsigned long value)
 {
-  irsend.sendNEC(value, 16);
-  irrecv.resume(); // Receive the next value
+  irsend.sendNEC(value, 32);
+  delay(100);
+  irrecv.enableIRIn();
 }
