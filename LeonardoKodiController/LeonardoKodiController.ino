@@ -18,7 +18,7 @@
 #include <IRremote.h>
 #include "Keyboard.h"
 
-const int receivePin = 11;
+const int receivePin = 9;
 IRrecv irrecv(receivePin);
 decode_results results;
 
@@ -26,21 +26,26 @@ const int minimumPressTime = 100; // MS to keep the key pressed for
 
 bool repeatable = false;
 unsigned long pressTime = 0;
+bool pressingKeys = false;
 
 void setup()
 {
   Keyboard.begin();
+  // Serial.begin(57600);
   irrecv.enableIRIn(); // Start the receiver
 }
 
 void loop() {
   if (irrecv.decode(&results)) {
+    // Serial.print("Code: ");
     // Serial.println(results.value, HEX); // Debug line
     switch (results.value) {
       case 0xFFFFFFFF: // Repeat code
         // Don't release the key unless it's a non repeatable key.
         if (!repeatable) {
           Keyboard.releaseAll();
+        } else {
+          pressTime = millis(); // Keep the timer running.
         }
         break;
       case 0xA50: // Source
@@ -137,14 +142,16 @@ void loop() {
   }
   else {
     unsigned long now = millis();
-    if (now - pressTime > minimumPressTime) {
+    if ((now - pressTime > minimumPressTime) && pressingKeys) {
       Keyboard.releaseAll();
+      pressingKeys = false;
     }
   }
 }
 
 void setKeyboard(char key)
 {
+  pressingKeys = true;
   Keyboard.press(key);
   pressTime = millis();
 }
