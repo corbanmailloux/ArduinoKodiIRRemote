@@ -18,6 +18,8 @@
 #include <IRremote.h>
 #include "Keyboard.h"
 
+const bool debug = false; // Serial instead of Keyboard
+
 const int receivePin = 9;
 IRrecv irrecv(receivePin);
 decode_results results;
@@ -28,23 +30,27 @@ bool repeatable = false;
 unsigned long pressTime = 0;
 bool pressingKeys = false;
 
-void setup()
-{
-  Keyboard.begin();
-  // Serial.begin(57600);
+void setup() {
+  if (debug) {
+    Serial.begin(57600);
+  } else {
+    Keyboard.begin();
+  }
+  
   irrecv.enableIRIn(); // Start the receiver
 }
 
 void loop() {
   if (irrecv.decode(&results)) {
-    // Serial.print("Code: ");
-    // Serial.println(results.value, HEX); // Debug line
+    if (debug) {
+      Serial.print("Code: ");
+      Serial.println(results.value, HEX); // Debug line
+    }
+
     switch (results.value) {
       case 0xFFFFFFFF: // Repeat code
         // Don't release the key unless it's a non repeatable key.
-        if (!repeatable) {
-          Keyboard.releaseAll();
-        } else {
+        if (repeatable) {
           pressTime = millis(); // Keep the timer running.
         }
         break;
@@ -143,15 +149,27 @@ void loop() {
   else {
     unsigned long now = millis();
     if ((now - pressTime > minimumPressTime) && pressingKeys) {
-      Keyboard.releaseAll();
+      releaseAll();
       pressingKeys = false;
     }
   }
 }
 
-void setKeyboard(char key)
-{
+void setKeyboard(char key) {
   pressingKeys = true;
-  Keyboard.press(key);
+  if (debug) {
+    Serial.print("Key Down: ");
+    Serial.println(key);
+  } else {
+    Keyboard.press(key);
+  }
   pressTime = millis();
+}
+
+void releaseAll() {
+  if (debug) {
+    Serial.println("Release All");
+  } else {
+    Keyboard.releaseAll();
+  }
 }
